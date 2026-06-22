@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCEAN LIFE Eco-Quiz Challenge - Neon Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;500;700&family=Prompt:wght@400;600;800&display=swap');
+
+        :root {
+            --bg-color: #060913;
+            --panel-bg: #0f172a;
+            --neon-blue: #00f0ff;
+            --neon-green: #39ff14;
+            --neon-pink: #ff007f;
+            --neon-yellow: #fff01f;
+            --text-color: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Prompt', 'Kanit', sans-serif;
+            /* ระบบป้องกันการคลุมดำก๊อปปี้คำตอบ */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1e1b4b 0%, var(--bg-color) 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        /* Container สไตล์ High-Tech Cyber Panel */
+        .game-container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.25), inset 0 0 15px rgba(0, 240, 255, 0.1);
+            border: 2px solid var(--neon-blue);
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        h1.neon-title {
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+            margin-bottom: 25px;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* แถบเวลาดีไซน์ล้ำสมัย */
+        .timer-container {
+            width: 100%;
+            height: 12px;
+            background: #1e293b;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+            box-shadow: 0 0 10px var(--neon-green);
+            transition: width 0.05s linear;
+        }
+
+        /* กล่องข้อความคำถาม อ่านง่าย ชัดเจน */
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        /* ปุ่มคำตอบสไตล์ Glow */
+        .btn-option {
+            background: #1e293b;
+            color: var(--text-color);
+            border: 2px solid #475569;
+            padding: 18px 24px;
+            border-radius: 16px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .btn-option:active {
+            transform: scale(0.97);
+        }
+
+        /* การเปลี่ยนสีตาม Phase และ Hover Effects */
+        .phase1 .btn-option:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+            background: rgba(0, 240, 255, 0.08);
+        }
+
+        .phase2 .btn-option.btn-true { border-color: var(--neon-green); font-size: 1.6rem; text-align: center; font-weight: 700; }
+        .phase2 .btn-option.btn-false { border-color: var(--neon-pink); font-size: 1.6rem; text-align: center; font-weight: 700; }
+        .phase2 .btn-option.btn-true:hover { background: rgba(57, 255, 20, 0.12); box-shadow: 0 0 20px rgba(57, 255, 20, 0.5); }
+        .phase2 .btn-option.btn-false:hover { background: rgba(255, 0, 127, 0.12); box-shadow: 0 0 20px rgba(255, 0, 127, 0.5); }
+
+        /* ปุ่มแอคชั่นหลัก */
+        .btn-action {
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-green));
+            color: #000;
+            border: none;
+            padding: 16px 45px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 0 20px var(--neon-green);
+            margin-top: 25px;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--neon-blue);
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* ตราสัญลักษณ์แสดงสถานะโหมด */
+        .badge {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-p1 { background: rgba(0, 240, 255, 0.15); color: var(--neon-blue); border: 1px solid var(--neon-blue); }
+        .badge-p2 { background: rgba(57, 255, 20, 0.15); color: var(--neon-green); border: 1px solid var(--neon-green); }
+
+        /* 🔥 ลูกเล่นพิเศษ: ระบบป้ายแจ้งเตือน Combo Streak */
+        .combo-badge {
+            background: linear-gradient(135deg, #ff007f, #fff01f);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            display: none;
+            box-shadow: 0 0 15px var(--neon-pink);
+            animation: pulse 0.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); } to { transform: scale(1.1); }
+        }
+
+        /* Responsive Design แม่นยำทุกสมาร์ตโฟน */
+        @media (max-width: 480px) {
+            .game-container { padding: 20px; }
+            h1.neon-title { font-size: 1.5rem; }
+            .question-text { font-size: 1.15rem; min-height: 80px; }
+            .btn-option { font-size: 1rem; padding: 14px 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- 1. หน้าแรก (Welcome Screen) -->
+        <div id="start-screen" class="screen active">
+            <h1 class="neon-title">OCEAN LIFE<br>Eco-Quiz Challenge</h1>
+            <p style="margin-bottom: 25px; color: #94a3b8; line-height: 1.7; font-size: 1.05rem;">
+                ยินดีต้อนรับผู้บริหารและพนักงานไทยสมุทรฯ ทุกท่าน<br>
+                ร่วมท้าทายจิตสำนึกสิ่งแวดล้อมเพื่อองค์กรยั่งยืน <br>
+                <span style="color: var(--neon-yellow); font-weight:600;">⚡ จำนวน 16 ข้อ • จับเวลาข้อละ 30 วินาที ⚡</span><br>
+                (ระบบจะสุ่มสลับโจทย์และตัวเลือกใหม่ทุกรอบที่กดเล่น)
+            </p>
+            <button class="btn-action" onclick="startGame()">เริ่มการแข่งขัน!</button>
+        </div>
+
+        <!-- 2. หน้าสมรภูมิเกม (Quiz Screen) -->
+        <div id="quiz-screen" class="screen">
+            <div class="status-bar">
+                <div>ข้อที่: <span id="current-question-num" style="color: var(--neon-blue);">1</span>/16</div>
+                <div id="combo-container" class="combo-badge">COMBO X1</div>
+                <div id="phase-badge" class="badge">Phase</div>
+                <div>คะแนน: <span id="current-score" style="color: var(--neon-green);">0</span></div>
+            </div>
+            
+            <div class="timer-container">
+                <div id="timer-bar" class="timer-bar"></div>
+            </div>
+
+            <div id="question-text" class="question-text">ระบบกำลังประมวลผลโจทย์...</div>
+            <div id="options-container" class="options-grid"></div>
+        </div>
+
+        <!-- 3. หน้าสรุปหอเกียรติยศ (Result Screen) -->
+        <div id="result-screen" class="screen">
+            <h1 class="neon-title" style="color: var(--neon-green); text-shadow: 0 0 15px var(--neon-green);">FINISH!</h1>
+            <div style="font-size: 1.6rem; margin: 25px 0;">
+                คะแนนรวมของคุณ: <span id="final-score" style="color: var(--neon-blue); font-size: 3rem; font-weight: 800; text-shadow: 0 0 10px var(--neon-blue);">0</span> / 16
+            </div>
+            <p id="evaluation-text" style="margin-bottom: 30px; color: #e2e8f0; font-size: 1.15rem; line-height: 1.6; font-weight: 500;"></p>
+            <button class="btn-action" onclick="resetGame()">ท้าทายใหม่อีกรอบ</button>
+        </div>
+    </div>
+
+    <script>
+        // ฐานข้อมูลคำถามอัปเดตตามคลังข้อสอบ Word แม่นยำ 100% ไร้ Error[cite: 1]
+        // โดยกำหนดให้คำตอบในช่องแรกของอาเรย์ a เป็นคำตอบที่ถูกเสมอ (และจะถูก Shuffle สลับตำแหน่งในระบบก่อนผู้เล่นเห็น)
+        const masterQuestions = [
+            // ส่วนที่ 1: ข้อคำถามแบบเลือกตอบ (7 ข้อ)[cite: 1]
+            { type: 1, q: "การคัดแยกขยะในอาคารสำนักงานใหญ่ ข้อใดจัดเป็นขยะรีไซเคิลอย่างถูกต้อง?", a: ["ขวดพลาสติก PET และลังกระดาษเอกสาร", "เศษอาหารและเปลือกผลไม้", "ทิชชู่เปียกที่ใช้แล้ว", "หลอดไฟและถ่านไฟฉายหมดอายุ"], correct: 0 }, //[cite: 1]
+            { type: 1, q: "ควรตั้งอุณหภูมิเครื่องปรับอากาศกี่องศาเซลเซียสเพื่อประหยัดพลังงาน?", a: ["25 องศาเซลเซียส", "18 องศาเซลเซียส", "20 องศาเซลเซียส", "22 องศาเซลเซียส"], correct: 0 }, //[cite: 1]
+            { type: 1, q: "ก่อนออกจากห้องประชุมหรือเลิกงาน ควรปฏิบัติอย่างไรด้านสิ่งแวดล้อม?", a: ["ปิดไฟ ปิดแอร์ และเครื่องใช้ไฟฟ้าที่ไม่ได้ใช้", "เปิดแอร์ทิ้งไว้ให้ห้องเย็นสำหรับวันต่อไป", "ปิดเฉพาะหน้าจอคอมพิวเตอร์", "เสียบปลั๊กเครื่องสำรองไฟทิ้งไว้ทั้งหมด"], correct: 0 }, //[cite: 1]
+            { type: 1, q: "ขยะประเภทคอมพิวเตอร์เก่า คีย์บอร์ดพัง หรือสายไฟที่ชำรุดในสำนักงาน จัดเป็นขยะประเภทใด?", a: ["ขยะอิเล็กทรอนิกส์ (E-Waste)", "ขยะรีไซเคิลทั่วไป", "ขยะอินทรีย์ย่อยสลายได้", "ขยะอันตรายปนเปื้อนสารเคมี"], correct: 0 }, //[cite: 1]
+            { type: 1, q: "การลดใช้พลังงานในลิฟต์ของอาคารสำนักงานใหญ่ สามารถทำได้อย่างไรในชีวิตประจำวัน?", a: ["เดินขึ้นลงแทนการใช้ลิฟต์หากไปเพียง 1-2 ชั้น", "กดลิฟต์เล่นทุกชั้น", "เปิดประตูลิฟต์ค้างไว้นานๆ", "ใช้ลิฟต์คนเดียวทุกครั้งที่เคลื่อนย้าย"], correct: 0 }, //[cite: 1]
+            { type: 1, q: "เพื่อลดการสิ้นเปลืองพลังงานไฟฟ้า หน้าจอคอมพิวเตอร์ของพนักงานควรตั้งค่าอย่างไรเมื่อไม่ได้ใช้งานเกิน 15 นาที?", a: ["ตั้งค่าโหมด Sleep หรือปิดหน้าจอ", "เปิดภาพพักหน้าจอแบบเคลื่อนไหวสีสันสดใส", "เปิดความสว่างระดับสูงสุดทิ้งไว้", "เปิดหน้าเว็บทิ้งไว้ห้ามปิด"], correct: 0 }, //[cite: 1]
+            { type: 1, q: "ข้อใดเป็นวิธีการประหยัดทรัพยากรน้ำในห้องน้ำของสำนักงานสาขาได้ดีที่สุด?", a: ["แจ้งซ่อมทันทีเมื่อพบก๊อกน้ำรั่วซึม", "เปิดน้ำทิ้งไว้ระหว่างฟอกสบู่", "กดชักโครกเล่นหลายๆ ครั้งเพื่อความสะอาด", "ล้างมือด้วยน้ำอุ่นระดับสูงสุด"], correct: 0 }, //[cite: 1]
+
+            // ส่วนที่ 2: ข้อคำถามแบบ ถูก-ผิด (9 ข้อ)[cite: 1]
+            // ลำดับช้อยส์ตายตัวคือ [0] ถูก / [1] ผิด
+            { type: 2, q: "พนักงานสามารถทิ้งเศษอาหารรวมในถังขยะรีไซเคิลร่วมกับกระดาษได้", a: ["ถูก", "ผิด"], correct: 1 }, // คำตอบ: ผิด[cite: 1]
+            { type: 2, q: "การพิมพ์เอกสารแบบสองหน้า (Duplex) ช่วยลดการใช้กระดาษในองค์กรลงได้ถึง 50%", a: ["ถูก", "ผิด"], correct: 0 }, // คำตอบ: ถูก[cite: 1]
+            { type: 2, q: "หลอดไฟ LED ที่ใช้อยู่ในสำนักงานใหญ่ ช่วยประหยัดพลังงานไฟฟ้ามากกว่าหลอดไส้แบบเดิม", a: ["ถูก", "ผิด"], correct: 0 }, // คำตอบ: ถูก[cite: 1]
+            { type: 2, q: "แก้วกาแฟกระดาษที่เปื้อนคราบเครื่องดื่มหนาแน่น สามารถโยนเข้าถังรีไซเคิลได้ทันทีโดยไม่ต้องเช็ดล้าง", a: ["ถูก", "ผิด"], correct: 1 }, // คำตอบ: ผิด[cite: 1]
+            { type: 2, q: "การเปิดหน้าต่างทิ้งไว้ในขณะที่เปิดเครื่องปรับอากาศ ช่วยทำให้ห้องเย็นเร็วและประหยัดไฟขึ้น", a: ["ถูก", "ผิด"], correct: 1 }, // คำตอบ: ผิด[cite: 1]
+            { type: 2, q: "ขวดน้ำพลาสติกใสควรบิดแกะฉลากและเทน้ำออกให้หมดก่อนทิ้งลงถังรีไซเคิล", a: ["ถูก", "ผิด"], correct: 0 }, // คำตอบ: ถูก[cite: 1]
+            { type: 2, q: "ถุงพลาสติกหูหิ้วทั่วไปสามารถย่อยสลายได้เองตามธรรมชาติภายในเวลาเพียง 2-3 วัน", a: ["ถูก", "ผิด"], correct: 1 }, // คำตอบ: ผิด[cite: 1]
+            { type: 2, q: "การส่งต่อไฟล์งานผ่านระบบ Cloud หรือลิงก์แทนการพิมพ์กระดาษ ช่วยลดการสร้างขยะสำนักงานได้", a: ["ถูก", "ผิด"], correct: 0 }, // คำตอบ: ถูก[cite: 1]
+            { type: 2, q: "แบตเตอรี่สำนักงานที่เสื่อมสภาพแล้ว ถือเป็นขยะทั่วไป ทิ้งลงถังไหนก็ได้ในอาคาร", a: ["ถูก", "ผิด"], correct: 1 } // คำตอบ: ผิด[cite: 1]
+        ];
+
+        let gameQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let combo = 0; // ตัวแปรเก็บแต้ม Combo Streak
+        let timerInterval = null;
+        const maxTime = 30; // ยืนยัน 30 วินาทีต่อข้อคงที่
+
+        // 🔊 ลูกเล่นระบบเสียงสังเคราะห์ (Web Audio API)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+                osc.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.2); // A2
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'victory') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1174.66, audioCtx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            }
+        }
+
+        // ฟังก์ชันสลับตำแหน่ง (Fisher-Yates Shuffle Algorithm) เพื่อไม่ให้เกมซ้ำกันในแต่ละรอบ
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startGame() {
+            // เคลียร์หน้าจอ
+            document.getElementById('start-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            
+            // แยกชุดประมวลผลเพื่อสุ่มแยกชุดพาร์ท
+            let p1 = masterQuestions.filter(q => q.type === 1);
+            let p2 = masterQuestions.filter(q => q.type === 2);
+
+            shuffle(p1);
+            shuffle(p2);
+
+            // หลอมรวมเป็นโจทย์ 16 ข้อแบบแรนดอมใหม่ยกชุด
+            gameQuestions = [...p1, ...p2];
+            currentQuestionIndex = 0;
+            score = 0;
+            combo = 0;
+            document.getElementById('current-score').innerText = score;
+            document.getElementById('combo-container').style.display = 'none';
+            
+            showQuestion();
+        }
+
+        function showQuestion() {
+            clearInterval(timerInterval);
+            if (currentQuestionIndex >= gameQuestions.length) {
+                endGame();
+                return;
+            }
+
+            const currentQuestion = gameQuestions[currentQuestionIndex];
+            const container = document.getElementById('options-container');
+            const phaseBadge = document.getElementById('phase-badge');
+            const quizContainer = document.getElementById('quiz-screen');
+            
+            quizContainer.className = 'screen active';
+            container.innerHTML = '';
+
+            document.getElementById('current-question-num').innerText = currentQuestionIndex + 1;
+            document.getElementById('question-text').innerText = currentQuestion.q;
+
+            // ตรวจสอบจัดการแยก Phase การเล่น
+            if (currentQuestion.type === 1) {
+                phaseBadge.innerText = "Phase 1: ปรนัย 4 ตัวเลือก";
+                phaseBadge.className = "badge badge-p1";
+                quizContainer.classList.add('phase1');
+
+                // ทำการสลับ Choice ด้านในเพื่อความโปร่งใส ป้องกันการจำตำแหน่ง
+                let choices = currentQuestion.a.map((text, idx) => ({ text, originalIdx: idx }));
+                shuffle(choices);
+
+                choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-option';
+                    btn.innerText = choice.text;
+                    btn.onclick = () => checkAnswer(choice.originalIdx, currentQuestion.correct, btn);
+                    container.appendChild(btn);
+                });
+
+            } else if (currentQuestion.type === 2) {
+                phaseBadge.innerText = "Phase 2: ถูก หรือ ผิด";
+                phaseBadge.className = "badge badge-p2";
+                quizContainer.classList.add('phase2');
+
+                currentQuestion.a.forEach((text, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = `btn-option ${idx === 0 ? 'btn-true' : 'btn-false'}`;
+                    btn.innerText = text;
+                    btn.onclick = () => checkAnswer(idx, currentQuestion.correct, btn);
+                    container.appendChild(btn);
+                });
+            }
+
+            startTimer();
+        }
+
+        function startTimer() {
+            const timerBar = document.getElementById('timer-bar');
+            timerBar.style.width = '100%';
+
+            const startTimestamp = Date.now();
+            const endTimestamp = startTimestamp + (maxTime * 1000);
+
+            timerInterval = setInterval(() => {
+                const now = Date.now();
+                const remaining = endTimestamp - now;
+                
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerBar.style.width = '0%';
+                    combo = 0; // ล้างคอมโบเมื่อหมดเวลา
+                    document.getElementById('combo-container').style.display = 'none';
+                    nextQuestion();
+                } else {
+                    const percent = (remaining / (maxTime * 1000)) * 100;
+                    timerBar.style.width = `${percent}%`;
+                }
+            }, 50); // อัปเดตบ่อยพิเศษเพื่อความนุ่มนวลสมูทขีดสุดของหลอดเวลา
+        }
+
+        // ⚡ ระบบ Instant Arcade Submit ตรวจคำตอบแบบกะพริบแสงนีออนแจ่มๆ 0.6 วินาที
+        function checkAnswer(selectedIdx, correctIdx, btnElement) {
+            clearInterval(timerInterval);
+            
+            // ล็อกปุ่มทั้งหมดทันทีก่อนข้าม เพื่อไม่ให้ผู้เล่นกดย้ำซ้ำซ้อน
+            const buttons = document.querySelectorAll('.btn-option');
+            buttons.forEach(b => b.style.pointerEvents = 'none');
+
+            const isCorrect = (selectedIdx === correctIdx);
+            const comboBadge = document.getElementById('combo-container');
+
+            if (isCorrect) {
+                score++;
+                combo++;
+                // สาดแสงนีออนเขียวฉุดไม่อยู่
+                btnElement.style.background = 'rgba(57, 255, 20, 0.25)';
+                btnElement.style.borderColor = 'var(--neon-green)';
+                btnElement.style.boxShadow = '0 0 25px var(--neon-green)';
+                playSound('correct');
+
+                if (combo >= 2) {
+                    comboBadge.innerText = `COMBO X${combo}! 🔥`;
+                    comboBadge.style.display = 'block';
+                }
+            } else {
+                combo = 0; // ตัดกระแส Combo ทันที
+                comboBadge.style.display = 'none';
+                // สาดแสงนีออนสีชมพูแจ้งเตือนตอบพลาด
+                btnElement.style.background = 'rgba(255, 0, 127, 0.25)';
+                btnElement.style.borderColor = 'var(--neon-pink)';
+                btnElement.style.boxShadow = '0 0 25px var(--neon-pink)';
+                playSound('wrong');
+            }
+
+            document.getElementById('current-score').innerText = score;
+
+            // หน่วงเวลาสั้นๆ 0.6 วินาทีเพื่อให้เห็นผลเอฟเฟกต์ไฟกะพริบ ก่อนเปลี่ยนข้ออัตโนมัติ
+            setTimeout(() => {
+                nextQuestion();
+            }, 600);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        function endGame() {
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+            document.getElementById('final-score').innerText = score;
+            playSound('victory');
+
+            let evalText = "";
+            if (score >= 13) {
+                evalText = "🏆 ระดับตำนาน! คุณคือผู้นำนวัตกรรมแห่งการดูแลรักษาสิ่งแวดล้อม OCEAN LIFE อย่างแท้จริง ผู้บริหารต้องยกนิ้วให้!";
+            } else if (score >= 8) {
+                evalText = "🌱 ยอดเยี่ยมมาก! คุณมีความเข้าใจที่ยอดเยี่ยมและพร้อมปฏิบัติตามแนวทาง Green Office ของไทยสมุทรฯ ครับ";
+            } else {
+                evalText = "🌊 พยายามอีกนิดน้า! มาร่วมใจกันศึกษาแนวทางจัดการพลังงานเพื่ออนาคตที่ยั่งยืนของ OCEAN LIFE เรากันใหม่นะครับ";
+            }
+            document.getElementById('evaluation-text').innerText = evalText;
+        }
+
+        function resetGame() {
+            document.getElementById('result-screen').classList.remove('active');
+            startGame();
+        }
+    </script>
+</body>
+</html>
